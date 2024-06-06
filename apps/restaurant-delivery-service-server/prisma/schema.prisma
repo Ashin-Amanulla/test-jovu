@@ -1,0 +1,143 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Driver {
+  createdAt      DateTime @default(now())
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  isActive       Boolean?
+  name           String?
+  phone          String?
+  updatedAt      DateTime @updatedAt
+  vehicleDetails String?
+}
+
+model Menu {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  isActive    Boolean?
+  name        String?
+  price       Float?
+  updatedAt   DateTime @updatedAt
+}
+
+model Account {
+  createdAt DateTime         @default(now())
+  email     String?
+  id        String           @id @default(auto()) @map("_id") @db.ObjectId
+  password  String?
+  role      EnumAccountRole?
+  updatedAt DateTime         @updatedAt
+}
+
+model Admin {
+  createdAt DateTime @default(now())
+  email     String?
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String?
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  amount        Float?
+  createdAt     DateTime                  @default(now())
+  id            String                    @id @default(auto()) @map("_id") @db.ObjectId
+  order         Order?                    @relation(fields: [orderId], references: [id])
+  orderId       String?                   @db.ObjectId
+  paymentMethod EnumPaymentPaymentMethod?
+  status        EnumPaymentStatus?
+  updatedAt     DateTime                  @updatedAt
+}
+
+model Food {
+  carts       Cart[]
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  isAvailable Boolean?
+  name        String?
+  orders      Order[]
+  price       Float?
+  reviews     Review[]
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  createdAt        DateTime         @default(now())
+  food             Food?            @relation(fields: [foodId], references: [id])
+  foodId           String?          @db.ObjectId
+  id               String           @id @default(auto()) @map("_id") @db.ObjectId
+  liveUpdatesItems LiveUpdates[]
+  payments         Payment[]
+  status           EnumOrderStatus?
+  totalAmount      Float?
+  updatedAt        DateTime         @updatedAt
+  user             String?
+}
+
+model Cart {
+  createdAt DateTime @default(now())
+  food      Food?    @relation(fields: [foodId], references: [id])
+  foodId    String?  @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  quantity  Int?
+  updatedAt DateTime @updatedAt
+  user      String?
+}
+
+model Review {
+  comment   String?
+  createdAt DateTime @default(now())
+  food      Food?    @relation(fields: [foodId], references: [id])
+  foodId    String?  @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  rating    Int?
+  updatedAt DateTime @updatedAt
+  user      String?
+}
+
+model LiveUpdates {
+  createdAt       DateTime               @default(now())
+  currentLocation String?
+  id              String                 @id @default(auto()) @map("_id") @db.ObjectId
+  order           Order?                 @relation(fields: [orderId], references: [id])
+  orderId         String?                @db.ObjectId
+  status          EnumLiveUpdatesStatus?
+  updatedAt       DateTime               @updatedAt
+}
+
+model UserAddress {
+  address   String?
+  city      String?
+  createdAt DateTime @default(now())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  updatedAt DateTime @updatedAt
+  user      String?
+  zipCode   String?
+}
+
+enum EnumAccountRole {
+  Option1
+}
+
+enum EnumPaymentPaymentMethod {
+  Option1
+}
+
+enum EnumPaymentStatus {
+  Option1
+}
+
+enum EnumOrderStatus {
+  Option1
+}
+
+enum EnumLiveUpdatesStatus {
+  Option1
+}
