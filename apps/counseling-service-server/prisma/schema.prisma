@@ -1,0 +1,98 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Appointment {
+  appointmentReason String?
+  appointmentStatus EnumAppointmentAppointmentStatus?
+  counselor         Counselor?                        @relation(fields: [counselorId], references: [id])
+  counselorId       String?
+  createdAt         DateTime                          @default(now())
+  id                String                            @id @default(cuid())
+  updatedAt         DateTime                          @updatedAt
+  user              User?                             @relation(fields: [userId], references: [id])
+  userId            String?
+}
+
+model Availability {
+  counselor   Counselor? @relation(fields: [counselorId], references: [id])
+  counselorId String?
+  createdAt   DateTime   @default(now())
+  date        DateTime?
+  endTime     DateTime?
+  id          String     @id @default(cuid())
+  startTime   DateTime?
+  updatedAt   DateTime   @updatedAt
+}
+
+model EventType {
+  createdAt   DateTime @default(now())
+  description String?
+  id          String   @id @default(cuid())
+  name        String?
+  updatedAt   DateTime @updatedAt
+}
+
+model Counselor {
+  appointments       Appointment[]
+  availabilities     Availability[]
+  availableTimeSlots String?
+  createdAt          DateTime       @default(now())
+  id                 String         @id @default(cuid())
+  specialization     String?
+  updatedAt          DateTime       @updatedAt
+}
+
+model Profile {
+  bio            String?
+  createdAt      DateTime @default(now())
+  id             String   @id @default(cuid())
+  profilePicture Json?
+  updatedAt      DateTime @updatedAt
+  user           User?    @relation(fields: [userId], references: [id])
+  userId         String?
+}
+
+model Event {
+  createdAt DateTime  @default(now())
+  createdBy String?
+  endTime   DateTime?
+  id        String    @id @default(cuid())
+  startTime DateTime?
+  title     String?
+  updatedAt DateTime  @updatedAt
+}
+
+model Notification {
+  createdAt DateTime  @default(now())
+  date      DateTime?
+  id        String    @id @default(cuid())
+  message   String?
+  updatedAt DateTime  @updatedAt
+  user      User?     @relation(fields: [userId], references: [id])
+  userId    String?
+}
+
+model User {
+  appointments  Appointment[]
+  createdAt     DateTime       @default(now())
+  email         String?        @unique
+  firstName     String?
+  id            String         @id @default(cuid())
+  lastName      String?
+  notifications Notification[]
+  password      String
+  profiles      Profile[]
+  roles         Json
+  updatedAt     DateTime       @updatedAt
+  username      String         @unique
+}
+
+enum EnumAppointmentAppointmentStatus {
+  Option1
+}
